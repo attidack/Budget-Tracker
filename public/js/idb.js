@@ -1,9 +1,9 @@
 let db;
-const request = indexedDB.open('pizza_hunt', 1);
+const request = indexedDB.open('budget_tracker', 1);
 
 request.onupgradeneeded = function(event) {
   const db = event.target.result;
-  db.createObjectStore('budget_tracker', 1);
+  db.createObjectStore('budget_tracker', { autoIncrement: true });
 };
 
 request.onsuccess = function(event) {
@@ -35,10 +35,10 @@ function uploadBudget() {
   const transaction = db.transaction(['pending'], 'readwrite');
 
   // access your pending object store
-  const ObjectStore = transaction.objectStore('pending');
+  const budgetObjectStore = transaction.objectStore('pending');
 
   // get all records from store and set to a variable
-  const getAll = ObjectStore.getAll();
+  const getAll = budgetObjectStore.getAll();
 
   getAll.onsuccess = function() {
     // if there was data in indexedDb's store, let's send it to the api server
@@ -58,9 +58,9 @@ function uploadBudget() {
           }
 
           const transaction = db.transaction(['pending'], 'readwrite');
-          const ObjectStore = transaction.objectStore('pending');
+          const budgetObjectStore = transaction.objectStore('pending');
           // clear all items in your store
-          ObjectStore.clear();
+          budgetObjectStore.clear();
         })
         .catch(err => {
           // set reference to redirect back here
