@@ -13,7 +13,6 @@
 
   ## Table of Contents
   - [Installation](#installation)
-  - [Insomnia](#insomnia)
   - [License](#license)
   - [Technology](#technology)
   - [Tests](#tests)
