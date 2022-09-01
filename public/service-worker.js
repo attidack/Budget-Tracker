@@ -73,7 +73,7 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  evt.respondWith(
+  e.respondWith(
     fetch(e.request).catch(function() {
       return caches.match(e.request).then(function(response) {
         if (response) {
