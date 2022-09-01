@@ -53,11 +53,11 @@ self.addEventListener('fetch', function(e) {
       caches
         .open(DATA_CACHE_NAME)
         .then(cache => {
-          return fetch(evt.request)
+          return fetch(e.request)
             .then(response => {
               // If the response was good, clone it and store it in the cache.
               if (response.status === 200) {
-                cache.put(evt.request.url, response.clone());
+                cache.put(e.request.url, response.clone());
               }
 
               return response;
