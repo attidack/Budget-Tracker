@@ -28,6 +28,23 @@ self.addEventListener('install', function (e) {
   ); self.skipWaiting();
 });
 
+// Activate the service worker and remove old data from the cache
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(keyList => {
+      return Promise.all(
+        keyList.map(key => {
+          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+            console.log('Removing old cache data', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+
+  self.clients.claim();
+});
 
 // Respond with cached resources
 self.addEventListener('fetch', function (e) {
@@ -47,27 +64,3 @@ self.addEventListener('fetch', function (e) {
     })
   )
 })
-
-
-
-// Delete outdated caches
-self.addEventListener('activate', function (e) {
-  e.waitUntil(
-    caches.keys().then(function (keyList) {
-      // `keyList` contains all cache names under your username.github.io
-      // filter out ones that has this app prefix to create keeplist
-      let cacheKeeplist = keyList.filter(function (key) {
-        return key.indexOf(APP_PREFIX);
-      })
-      // add current cache name to keeplist
-      cacheKeeplist.push(CACHE_NAME);
-
-      return Promise.all(keyList.map(function (key, i) {
-        if (cacheKeeplist.indexOf(key) === -1) {
-          console.log('deleting cache : ' + keyList[i] );
-          return caches.delete(keyList[i]);
-        }
-      }));
-    })
-  );
-});
