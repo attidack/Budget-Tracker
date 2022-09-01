@@ -28,7 +28,7 @@ self.addEventListener('install', function (e) {
   ); self.skipWaiting();
 });
 
-// Activate the service worker and remove old data from the cache
+// Cache resources
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(keyList => {
@@ -46,7 +46,7 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
-// Intercept fetch requests
+// Respond with cached resources
 self.addEventListener('fetch', function(e) {
   if (e.request.url.includes('/api/')) {
     e.respondWith(
@@ -55,7 +55,6 @@ self.addEventListener('fetch', function(e) {
         .then(cache => {
           return fetch(e.request)
             .then(response => {
-              // If the response was good, clone it and store it in the cache.
               if (response.status === 200) {
                 cache.put(e.request.url, response.clone());
               }
@@ -63,7 +62,6 @@ self.addEventListener('fetch', function(e) {
               return response;
             })
             .catch(err => {
-              // Network request failed, try to get it from the cache.
               return cache.match(e.request);
             });
         })
@@ -79,7 +77,6 @@ self.addEventListener('fetch', function(e) {
         if (response) {
           return response;
         } else if (e.request.headers.get('accept').includes('text/html')) {
-          // return the cached home page for all requests for html pages
           return caches.match('/');
         }
       });
